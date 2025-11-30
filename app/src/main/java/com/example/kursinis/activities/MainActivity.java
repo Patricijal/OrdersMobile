@@ -1,6 +1,6 @@
-package com.example.kursinis;
+package com.example.kursinis.activities;
 
-import static com.example.kursinis.Constants.VALIDATE_USER_URL;
+import static com.example.kursinis.utils.Constants.VALIDATE_USER_URL;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.kursinis.R;
+import com.example.kursinis.utils.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 

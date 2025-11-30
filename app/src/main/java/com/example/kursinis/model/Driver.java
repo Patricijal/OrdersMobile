@@ -22,6 +22,12 @@ public class Driver extends BasicUser{
         this.vehicleType = vehicleType;
     }
 
+    public Driver(String license, LocalDate bDate, VehicleType vehicleType) {
+        this.license = license;
+        this.bDate = bDate;
+        this.vehicleType = vehicleType;
+    }
+
     public Driver() {
     }
 

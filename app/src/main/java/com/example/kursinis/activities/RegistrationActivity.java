@@ -1,6 +1,7 @@
-package com.example.kursinis;
+package com.example.kursinis.activities;
 
-import static com.example.kursinis.Constants.CREATE_BASIC_USER_URL;
+import static com.example.kursinis.utils.Constants.CREATE_BASIC_USER_URL;
+import static com.example.kursinis.utils.Constants.CREATE_DRIVER_URL;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +16,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.kursinis.R;
+import com.example.kursinis.model.Driver;
+import com.example.kursinis.model.VehicleType;
+import com.example.kursinis.utils.RestOperations;
 import com.example.kursinis.model.BasicUser;
 import com.google.gson.Gson;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -45,10 +49,29 @@ public class RegistrationActivity extends AppCompatActivity {
         TextView surname = findViewById(R.id.regSurnameField);
         TextView phoneNum = findViewById(R.id.regPhoneNumField);
         TextView address = findViewById(R.id.regAddressField);
+        TextView license = findViewById(R.id.regLicenseField);
+        TextView bDate = findViewById(R.id.regBirthDateField);
+        TextView vehicleType = findViewById(R.id.regVehicleTypeField);
 
         String userInfo = "{}";
         if (findViewById(R.id.regIsDriver).isActivated()) {
             //Kurti driveri
+            LocalDate birthDate = LocalDate.parse(bDate.getText().toString());
+            VehicleType vehicleTypeEnum = VehicleType.valueOf(vehicleType.getText().toString().toUpperCase());
+            Driver driver = new Driver(
+                    username.getText().toString(),
+                    password.getText().toString(),
+                    name.getText().toString(),
+                    surname.getText().toString(),
+                    phoneNum.getText().toString(),
+                    address.getText().toString(),
+                    license.getText().toString(),
+                    birthDate,
+                    vehicleTypeEnum
+            );
+            Gson gson = new Gson();
+            userInfo = gson.toJson(driver, Driver.class);
+            System.out.println(userInfo);
         } else {
             BasicUser basicUser = new BasicUser(
                     username.getText().toString(),
@@ -68,10 +91,17 @@ public class RegistrationActivity extends AppCompatActivity {
 
         String finalUserInfo = userInfo;
         executor.execute(() -> {
+            // PROBLEMA SU DRIVERIU
+            String response = "";
             try {
-                String response = RestOperations.sendPost(CREATE_BASIC_USER_URL, finalUserInfo);
+                if (findViewById(R.id.regIsDriver).isActivated()) {
+                    response = RestOperations.sendPost(CREATE_DRIVER_URL, finalUserInfo);
+                } else {
+                    response = RestOperations.sendPost(CREATE_BASIC_USER_URL, finalUserInfo);
+                }
+                String finalResponse = response;
                 handler.post(() -> {
-                    if (!response.equals("Error") && !response.isEmpty()) {
+                    if (!finalResponse.equals("Error") && !finalResponse.isEmpty()) {
                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
