@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Kursinis</string>
+    <string name="login_btn_lt">Junkis</string>
+    <string name="login_btn_en">Log in</string>
+    <string name="register_btn">Register</string>
+
+    <string name="login">Login</string>
+    <string name="psw">Password</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="phoneNumber">Phone Number</string>
+    <string name="address">Address</string>
+    <string name="license">License</string>
+    <string name="bDate">Birth Date</string>
+    <string name="vehicleType">Vehicle Type</string>
+    <string name="isDriver">Is Driver?</string>
+
+    <string name="history_en">View history</string>
+    <string name="update_btn_en">My info</string>
+</resources>
