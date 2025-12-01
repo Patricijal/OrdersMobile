@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -19,12 +20,16 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.kursinis.R;
 import com.example.kursinis.model.Driver;
 import com.example.kursinis.model.VehicleType;
+import com.example.kursinis.utils.LocalDateAdapter;
+import com.example.kursinis.utils.LocalDateTimeSerializer;
 import com.example.kursinis.utils.RestOperations;
 import com.example.kursinis.model.BasicUser;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -53,8 +58,17 @@ public class RegistrationActivity extends AppCompatActivity {
         TextView bDate = findViewById(R.id.regBirthDateField);
         TextView vehicleType = findViewById(R.id.regVehicleTypeField);
 
+        CheckBox isDriverCheckbox = findViewById(R.id.regIsDriver);
+        boolean isDriver = isDriverCheckbox.isChecked();
+
+        // DATU PROBLEMOS
+        GsonBuilder build = new GsonBuilder();
+        build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+        build.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        Gson gson = build.setPrettyPrinting().create();
+
         String userInfo = "{}";
-        if (findViewById(R.id.regIsDriver).isActivated()) {
+        if (isDriver) {
             //Kurti driveri
             LocalDate birthDate = LocalDate.parse(bDate.getText().toString());
             VehicleType vehicleTypeEnum = VehicleType.valueOf(vehicleType.getText().toString().toUpperCase());
@@ -69,7 +83,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     birthDate,
                     vehicleTypeEnum
             );
-            Gson gson = new Gson();
+//            Gson gson = new Gson();
             userInfo = gson.toJson(driver, Driver.class);
             System.out.println(userInfo);
         } else {
@@ -81,7 +95,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     phoneNum.getText().toString(),
                     address.getText().toString()
             );
-            Gson gson = new Gson();
+//            Gson gson = new Gson();
             userInfo = gson.toJson(basicUser, BasicUser.class);
             System.out.println(userInfo);
         }
@@ -91,10 +105,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         String finalUserInfo = userInfo;
         executor.execute(() -> {
-            // PROBLEMA SU DRIVERIU
             String response = "";
             try {
-                if (findViewById(R.id.regIsDriver).isActivated()) {
+                if (isDriver) {
                     response = RestOperations.sendPost(CREATE_DRIVER_URL, finalUserInfo);
                 } else {
                     response = RestOperations.sendPost(CREATE_BASIC_USER_URL, finalUserInfo);

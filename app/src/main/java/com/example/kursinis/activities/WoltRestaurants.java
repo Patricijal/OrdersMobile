@@ -52,7 +52,7 @@ public class WoltRestaurants extends AppCompatActivity {
         Intent intent = getIntent();
         String userInfo = intent.getStringExtra("userJsonObject");
 
-
+        // DATU PROBLEMOS
         GsonBuilder build = new GsonBuilder();
         build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
         Gson gson = build.setPrettyPrinting().create();
