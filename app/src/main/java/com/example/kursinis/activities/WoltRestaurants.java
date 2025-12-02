@@ -36,6 +36,8 @@ import java.util.concurrent.Executors;
 
 public class WoltRestaurants extends AppCompatActivity {
 
+    User currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,13 +56,13 @@ public class WoltRestaurants extends AppCompatActivity {
 
         // DATU PROBLEMOS
         GsonBuilder build = new GsonBuilder();
-        build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+        build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
         Gson gson = build.setPrettyPrinting().create();
-        var connectedUser = gson.fromJson(userInfo, User.class);
+        currentUser = gson.fromJson(userInfo, User.class);
 
-        if (connectedUser instanceof Driver) {
+        if (currentUser instanceof Driver) {
 
-        } else if (connectedUser instanceof Restaurant) {
+        } else if (currentUser instanceof Restaurant) {
             //net neleisim sito
         } else {
             Executor executor = Executors.newSingleThreadExecutor();
@@ -114,8 +116,12 @@ public class WoltRestaurants extends AppCompatActivity {
     }
 
     public void viewPurchaseHistory(View view) {
+        Intent intent = new Intent(WoltRestaurants.this, MyOrders.class);
+        intent.putExtra("id", currentUser.getId());;
+        startActivity(intent);
     }
 
     public void viewMyAccount(View view) {
+        // arba naujas activity arbas fragmentas - account redagavimo forma (pagal user id)
     }
 }
