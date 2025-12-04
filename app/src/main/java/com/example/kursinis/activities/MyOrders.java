@@ -64,7 +64,7 @@ public class MyOrders extends AppCompatActivity {
 
         executor.execute(() -> {
             try {
-                String response = RestOperations.sendGet(GET_ORDERS_BY_USER+userId);
+                String response = RestOperations.sendGet(GET_ORDERS_BY_USER + userId);
                 System.out.println(response);
                 handler.post(() -> {
                     try {

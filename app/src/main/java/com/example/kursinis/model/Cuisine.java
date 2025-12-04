@@ -17,4 +17,7 @@ public class Cuisine {
     public boolean getVegan() {
         return vegan;
     }
+
+    @Override
+    public String toString() { return title + ", " + price + "€, " + description + ", " + allergens; }
 }

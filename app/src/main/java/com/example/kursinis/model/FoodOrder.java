@@ -69,4 +69,7 @@ public class FoodOrder {
     public void setDateUpdated(LocalDate dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
+    @Override
+    public String toString() { return "Order: " + name + ", " + price + "€, " + orderStatus + ", " + dateCreated; }
 }

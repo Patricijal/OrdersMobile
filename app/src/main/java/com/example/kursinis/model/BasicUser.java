@@ -18,6 +18,11 @@ public class BasicUser extends User{
     public BasicUser() {
     }
 
+    public BasicUser(int id, String login, String password, String name, String surname, String phoneNumber, String address) {
+        super(id, login, password, name, surname, phoneNumber);
+        this.address = address;
+    }
+
     public String getAddress() {
         return address;
     }

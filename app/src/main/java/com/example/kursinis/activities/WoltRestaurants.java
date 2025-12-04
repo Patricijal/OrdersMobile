@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -97,10 +98,9 @@ public class WoltRestaurants extends AppCompatActivity {
                                     //Sioje vietoje noresiu atidaryti nauja activity
                                     System.out.println(restaurantListFromJson.get(position));
                                     Intent intentMenu = new Intent(WoltRestaurants.this, MenuActivity.class);
+                                    intentMenu.putExtra("restaurantId", restaurantListFromJson.get(position).getId());
                                     startActivity(intentMenu);
                                 });
-
-
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -122,6 +122,13 @@ public class WoltRestaurants extends AppCompatActivity {
     }
 
     public void viewMyAccount(View view) {
-        // arba naujas activity arbas fragmentas - account redagavimo forma (pagal user id)
+        if (currentUser == null) {
+            Toast.makeText(this, "User not loaded yet!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(WoltRestaurants.this, MyInfoActivity.class);
+        intent.putExtra("id", currentUser.getId());
+        startActivity(intent);
     }
 }

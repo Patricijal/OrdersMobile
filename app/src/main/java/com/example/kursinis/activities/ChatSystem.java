@@ -2,6 +2,7 @@ package com.example.kursinis.activities;
 
 import static com.example.kursinis.utils.Constants.GET_MESSAGES_BY_ORDER;
 import static com.example.kursinis.utils.Constants.GET_ORDERS_BY_USER;
+import static com.example.kursinis.utils.Constants.SEND_MESSAGE_IN_CHAT;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,10 +21,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.kursinis.R;
 import com.example.kursinis.model.FoodOrder;
+import com.example.kursinis.model.Review;
 import com.example.kursinis.utils.LocalDateTypeAdapter;
 import com.example.kursinis.utils.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -64,29 +68,15 @@ public class ChatSystem extends AppCompatActivity {
                 handler.post(() -> {
                     try {
                         if (!response.equals("Error")) {
-                            //Cia yra dalis, kaip is json, kuriame yra [{},{}, {},...] paversti i List is Restoranu
-
                             GsonBuilder gsonBuilder = new GsonBuilder();
-//                                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-//                            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTypeAdapter());
                             gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
                             Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
-
-                            Type ordersListType = new TypeToken<List<FoodOrder>>() {
+                            Type ordersListType = new TypeToken<List<Review>>() {
                             }.getType();
-                            List<FoodOrder> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
+                            List<Review> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
                             ListView restaurantListElement = findViewById(R.id.messageList);
                             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ordersListFromJson);
                             restaurantListElement.setAdapter(adapter);
-
-//                            restaurantListElement.setOnItemClickListener((parent, view, position, id) -> {
-//                                System.out.println(ordersListFromJson.get(position));
-////                                Intent intentChat = new Intent(MyOrders.this, ChatSystem.class);
-////                                intentChat.putExtra("orderId", ordersListFromJson.get(position).getId());
-////                                startActivity(intentChat);
-//                            });
-
-
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -99,5 +89,42 @@ public class ChatSystem extends AppCompatActivity {
     }
 
     public void createMessage(View view) {
+        TextView messageField = findViewById(R.id.bodyField);
+        String messageText = messageField.getText().toString().trim();
+
+        if (messageText.isEmpty()) return;
+
+        // Create JSON
+        Gson gson = new Gson();
+        JsonObject json = new JsonObject();
+        json.addProperty("text", messageText);
+
+        // YOU MUST send commentOwner.id or driver.id
+        // Example: ownerId = 5
+        int ownerId = 2; // take from logged-in user!!!
+        JsonObject commentOwner = new JsonObject();
+        commentOwner.addProperty("id", ownerId);
+
+        json.add("commentOwner", commentOwner);
+
+        String body = gson.toJson(json);
+
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            try {
+                String response =
+                        RestOperations.sendPost(SEND_MESSAGE_IN_CHAT + orderId, body);
+
+                handler.post(() -> {
+                    messageField.setText("");
+//                    reloadMessages();  // refresh messages list
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

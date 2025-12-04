@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import com.example.kursinis.model.Driver;
 import com.example.kursinis.model.VehicleType;
 import com.example.kursinis.utils.LocalDateAdapter;
 import com.example.kursinis.utils.LocalDateTimeSerializer;
+import com.example.kursinis.utils.LocalDateTypeAdapter;
 import com.example.kursinis.utils.RestOperations;
 import com.example.kursinis.model.BasicUser;
 import com.google.gson.Gson;
@@ -61,15 +63,13 @@ public class RegistrationActivity extends AppCompatActivity {
         CheckBox isDriverCheckbox = findViewById(R.id.regIsDriver);
         boolean isDriver = isDriverCheckbox.isChecked();
 
-        // DATU PROBLEMOS
         GsonBuilder build = new GsonBuilder();
         build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-        build.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        build.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
         Gson gson = build.setPrettyPrinting().create();
 
         String userInfo = "{}";
         if (isDriver) {
-            //Kurti driveri
             LocalDate birthDate = LocalDate.parse(bDate.getText().toString());
             VehicleType vehicleTypeEnum = VehicleType.valueOf(vehicleType.getText().toString().toUpperCase());
             Driver driver = new Driver(
@@ -83,7 +83,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     birthDate,
                     vehicleTypeEnum
             );
-//            Gson gson = new Gson();
             userInfo = gson.toJson(driver, Driver.class);
             System.out.println(userInfo);
         } else {
@@ -95,7 +94,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     phoneNum.getText().toString(),
                     address.getText().toString()
             );
-//            Gson gson = new Gson();
             userInfo = gson.toJson(basicUser, BasicUser.class);
             System.out.println(userInfo);
         }

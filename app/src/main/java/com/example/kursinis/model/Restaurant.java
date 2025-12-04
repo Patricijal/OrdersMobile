@@ -46,4 +46,7 @@ public class Restaurant extends BasicUser {
     public void setRating(Double rating) {
         this.rating = rating;
     }
+
+    @Override
+    public String toString() { return getName() + " - address: " + getAddress() + ", phone number: " + getPhoneNumber() + ", work hours: " + workHours + ", rating: " + rating; }
 }

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         executor.execute(() -> {
             try {
                 String response = RestOperations.sendPost(VALIDATE_USER_URL, info);
+
+
                 handler.post(() -> {
                     if (!response.equals("Error") && !response.isEmpty()) {
                         Intent intent = new Intent(MainActivity.this, WoltRestaurants.class);
@@ -67,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             } catch (IOException e) {
-                //Toast reikes
+                e.printStackTrace();
+                handler.post(() -> Toast.makeText(MainActivity.this, "Login failed!", Toast.LENGTH_SHORT).show());
             }
         });
 

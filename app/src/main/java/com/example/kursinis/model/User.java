@@ -20,7 +20,16 @@ public class User implements Serializable {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
-//        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = LocalDateTime.now();
+    }
+
+    public User(int id, String login, String password, String name, String surname, String phoneNumber) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.phoneNumber = phoneNumber;
     }
 
     public User(int id, String login, String password, String name, String surname, String phoneNumber, LocalDateTime dateCreated, LocalDateTime dateUpdated, boolean isAdmin) {
@@ -111,5 +120,5 @@ public class User implements Serializable {
     }
 
     @Override
-    public String toString() { return "Name: " + name + " Surname: " + surname; }
+    public String toString() { return "Name: " + name; }
 }

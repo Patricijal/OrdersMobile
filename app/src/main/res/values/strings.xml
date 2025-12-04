@@ -3,6 +3,8 @@
     <string name="login_btn_lt">Junkis</string>
     <string name="login_btn_en">Log in</string>
     <string name="register_btn">Register</string>
+    <string name="update_info">Update</string>
+    <string name="back">Back</string>
 
     <string name="login">Login</string>
     <string name="psw">Password</string>
@@ -17,4 +19,7 @@
 
     <string name="history_en">View history</string>
     <string name="update_btn_en">My info</string>
+
+    <string name="send_btn">Send</string>
+    <string name="body_text">Enter Message...</string>
 </resources>

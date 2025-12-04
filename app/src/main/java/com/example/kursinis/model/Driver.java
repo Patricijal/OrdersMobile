@@ -31,6 +31,13 @@ public class Driver extends BasicUser{
     public Driver() {
     }
 
+    public Driver(int id, String login, String password, String name, String surname, String phoneNumber, String address, String license, LocalDate bDate, VehicleType vehicleType) {
+        super(id, login, password, name, surname, phoneNumber, address);
+        this.license = license;
+        this.bDate = bDate;
+        this.vehicleType = vehicleType;
+    }
+
     public String getLicense() {
         return license;
     }
@@ -39,11 +46,11 @@ public class Driver extends BasicUser{
         this.license = license;
     }
 
-    public LocalDate getbDate() {
+    public LocalDate getBDate() {
         return bDate;
     }
 
-    public void setbDate(LocalDate bDate) {
+    public void setBDate(LocalDate bDate) {
         this.bDate = bDate;
     }
 
