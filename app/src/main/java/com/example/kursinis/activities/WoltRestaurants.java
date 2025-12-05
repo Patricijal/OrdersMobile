@@ -79,26 +79,28 @@ public class WoltRestaurants extends AppCompatActivity {
                                 //Cia yra dalis, kaip is json, kuriame yra [{},{}, {},...] paversti i List is Restoranu
 
                                 GsonBuilder gsonBuilder = new GsonBuilder();
-//                                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
                                 gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
                                 Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
-
                                 Type restaurantListType = new TypeToken<List<Restaurant>>() {
                                 }.getType();
                                 List<Restaurant> restaurantListFromJson = gsonRestaurants.fromJson(response, restaurantListType);
                                 //Json parse end
 
                                 //Reikia tuos duomenis, kuriuos ka tik isparsinau is json, atvaizduoti grafiniam elemente
+//                                ListView restaurantListElement = findViewById(R.id.restaurantList);
+//                                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, restaurantListFromJson);
+//                                restaurantListElement.setAdapter(adapter);
+
                                 ListView restaurantListElement = findViewById(R.id.restaurantList);
-                                //Beda - man butinai reikia nurodyti koks layout ir ka idet t.y. duomenis
-                                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, restaurantListFromJson);
+                                RestaurantAdapter adapter = new RestaurantAdapter(this, restaurantListFromJson);
                                 restaurantListElement.setAdapter(adapter);
 
                                 restaurantListElement.setOnItemClickListener((parent, view, position, id) -> {
-                                    //Sioje vietoje noresiu atidaryti nauja activity
-                                    System.out.println(restaurantListFromJson.get(position));
+                                    Restaurant selectedRestaurant = restaurantListFromJson.get(position);
                                     Intent intentMenu = new Intent(WoltRestaurants.this, MenuActivity.class);
-                                    intentMenu.putExtra("restaurantId", restaurantListFromJson.get(position).getId());
+//                                    intentMenu.putExtra("restaurantId", restaurantListFromJson.get(position).getId());
+                                    intentMenu.putExtra("restaurantId", selectedRestaurant.getId());
+                                    intentMenu.putExtra("userId", currentUser.getId());
                                     startActivity(intentMenu);
                                 });
                             }

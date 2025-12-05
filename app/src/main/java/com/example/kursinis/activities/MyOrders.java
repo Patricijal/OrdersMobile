@@ -56,8 +56,6 @@ public class MyOrders extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getIntExtra("id", 0);
-//        String userInfo = intent.getStringExtra("userJsonObject");
-
 
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -69,25 +67,24 @@ public class MyOrders extends AppCompatActivity {
                 handler.post(() -> {
                     try {
                         if (!response.equals("Error")) {
-                            //Cia yra dalis, kaip is json, kuriame yra [{},{}, {},...] paversti i List is Restoranu
-
                             GsonBuilder gsonBuilder = new GsonBuilder();
-//                                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-//                            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTypeAdapter());
                             gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
                             Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
-
                             Type ordersListType = new TypeToken<List<FoodOrder>>() {
                             }.getType();
-                            List<FoodOrder> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
-                            ListView restaurantListElement = findViewById(R.id.myOrderList);
-                            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ordersListFromJson);
-                            restaurantListElement.setAdapter(adapter);
 
-                            restaurantListElement.setOnItemClickListener((parent, view, position, id) -> {
+                            List<FoodOrder> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
+
+                            ListView ordersListElement = findViewById(R.id.myOrderList);
+                            MyOrdersAdapter adapter = new MyOrdersAdapter(this, ordersListFromJson);
+                            ordersListElement.setAdapter(adapter);
+
+
+                            ordersListElement.setOnItemClickListener((parent, view, position, id) -> {
                                 System.out.println(ordersListFromJson.get(position));
                                 Intent intentChat = new Intent(MyOrders.this, ChatSystem.class);
                                 intentChat.putExtra("orderId", ordersListFromJson.get(position).getId());
+                                intentChat.putExtra("userId", userId);
                                 startActivity(intentChat);
                             });
 

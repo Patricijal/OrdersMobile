@@ -108,7 +108,7 @@ public class RestOperations {
         outputStream.close();
 
         int code = httpURLConnection.getResponseCode();
-        System.out.println("Resonse code get " + code);
+        System.out.println("Response code get " + code);
 
         if (code == HttpURLConnection.HTTP_OK) {
             BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));

@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+// ISSKIRTI USERIU TIPUS - BASICUSER IR DRIVER, RESTORANUI NELEISTI JUNGTIS
     public void validateUser(View view) {
         TextView loginField = findViewById(R.id.loginField);
         TextView passwordField = findViewById(R.id.passwordField);
@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         jsonObject.addProperty("password", passwordField.getText().toString());
         String info = gson.toJson(jsonObject);
 
-        // siusti ir apdoroti requests ir responses
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 

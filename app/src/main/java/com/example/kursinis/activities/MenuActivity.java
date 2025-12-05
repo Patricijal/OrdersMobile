@@ -1,14 +1,18 @@
 package com.example.kursinis.activities;
 
-import static com.example.kursinis.utils.Constants.GET_CUISINES_BY_RESTAURANT;
-import static com.example.kursinis.utils.Constants.GET_MESSAGES_BY_ORDER;
+import static com.example.kursinis.utils.Constants.CREATE_ORDER;
+import static com.example.kursinis.utils.Constants.GET_RESTAURANT_MENU;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,23 +21,28 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.kursinis.R;
 import com.example.kursinis.model.Cuisine;
-import com.example.kursinis.model.Review;
 import com.example.kursinis.utils.LocalDateTypeAdapter;
 import com.example.kursinis.utils.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class MenuActivity extends AppCompatActivity {
-
+public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnQuantityChangeListener {
+    private int userId;
     private int restaurantId;
+    private MenuAdapter menuAdapter;
+    private TextView orderTotalTextView;
+    private TextView orderItemsCountTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,45 +55,146 @@ public class MenuActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Noriu uzkrauti orderius konkreciam klientui
-
         Intent intent = getIntent();
+        userId = intent.getIntExtra("userId", 0);
         restaurantId = intent.getIntExtra("restaurantId", 0);
-//        String userInfo = intent.getStringExtra("userJsonObject");
 
+        orderTotalTextView = findViewById(R.id.orderTotal);
+        orderItemsCountTextView = findViewById(R.id.orderItemsCount);
+
+        loadMenu();
+    }
+
+    private void loadMenu() {
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            try {
+                String response = RestOperations.sendGet(GET_RESTAURANT_MENU + restaurantId);
+                System.out.println(response);
+                handler.post(() -> {
+                    try {
+                        if (!response.equals("Error")) {
+                            GsonBuilder gsonBuilder = new GsonBuilder();
+                            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
+                            Gson gsonMenu = gsonBuilder.setPrettyPrinting().create();
+                            Type menuListType = new TypeToken<List<Cuisine>>() {
+                            }.getType();
+                            List<Cuisine> menuListFromJson = gsonMenu.fromJson(response, menuListType);
+
+                            ListView menuListElement = findViewById(R.id.menuItems);
+                            menuAdapter = new MenuAdapter(this, menuListFromJson);
+                            menuListElement.setAdapter(menuAdapter);
+
+                            // Update order summary
+                            updateOrderSummary();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Error loading menu", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException e) {
+                handler.post(() -> {
+                    Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void updateOrderSummary() {
+        if (menuAdapter == null) return;
+
+        Map<Integer, Integer> quantities = menuAdapter.getQuantities();
+        List<Cuisine> menuItems = menuAdapter.getMenuItems();
+
+        double total = 0.0;
+        int itemCount = 0;
+
+        for (Cuisine cuisine : menuItems) {
+            int quantity = quantities.getOrDefault(cuisine.getId(), 0);
+            if (quantity > 0) {
+                total += cuisine.getPrice() * quantity;
+                itemCount += quantity;
+            }
+        }
+
+        orderTotalTextView.setText(String.format("Total: €%.2f", total));
+        orderItemsCountTextView.setText(String.format("Items: %d", itemCount));
+    }
+
+    public void placeOrder(View view) {
+        if (menuAdapter == null) {
+            Toast.makeText(this, "Menu not loaded yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<Integer, Integer> quantities = menuAdapter.getQuantities();
+        List<Cuisine> menuItems = menuAdapter.getMenuItems();
+
+        boolean hasItems = false;
+        for (int qty : quantities.values()) {
+            if (qty > 0) {
+                hasItems = true;
+                break;
+            }
+        }
+
+        if (!hasItems) {
+            Toast.makeText(this, "Please add items to your order", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Gson gson = new Gson();
+        JsonObject orderJson = new JsonObject();
+        orderJson.addProperty("userId", userId);
+        orderJson.addProperty("restaurantId", restaurantId);
+
+        JsonArray itemsArray = new JsonArray();
+        for (Cuisine cuisine : menuItems) {
+            int quantity = quantities.getOrDefault(cuisine.getId(), 0);
+            if (quantity > 0) {
+                JsonObject itemJson = new JsonObject();
+                itemJson.addProperty("cuisineId", cuisine.getId());
+                itemJson.addProperty("quantity", quantity);
+                itemsArray.add(itemJson);
+            }
+        }
+        orderJson.add("items", itemsArray);
+
+        String orderData = gson.toJson(orderJson);
 
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
             try {
-                String response = RestOperations.sendGet(GET_CUISINES_BY_RESTAURANT);
-                System.out.println(response);
+                String response = RestOperations.sendPost(CREATE_ORDER, orderData);
+                System.out.println("Order response: " + response);
                 handler.post(() -> {
-                    try {
-                        if (!response.equals("Error")) {
-                            //Cia yra dalis, kaip is json, kuriame yra [{},{}, {},...] paversti i List is Restoranu
-
-                            GsonBuilder gsonBuilder = new GsonBuilder();
-//                                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-//                            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTypeAdapter());
-                            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-                            Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
-
-                            Type ordersListType = new TypeToken<List<Cuisine>>() {
-                            }.getType();
-                            List<Cuisine> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
-                            ListView restaurantListElement = findViewById(R.id.cuisineList);
-                            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ordersListFromJson);
-                            restaurantListElement.setAdapter(adapter);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (!response.equals("Error") && !response.isEmpty()) {
+                        Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                        // Clear the cart
+                        menuAdapter.getQuantities().clear();
+                        menuAdapter.notifyDataSetChanged();
+                        updateOrderSummary();
+                        // Optionally go back to restaurants list
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Failed to place order", Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                handler.post(() -> {
+                    Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show();
+                });
             }
         });
+    }
+
+    @Override
+    public void onQuantityChanged() {
+        updateOrderSummary();
     }
 }

@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.kursinis.R;
 import com.example.kursinis.model.Driver;
 import com.example.kursinis.model.VehicleType;
-import com.example.kursinis.utils.LocalDateAdapter;
 import com.example.kursinis.utils.LocalDateTimeSerializer;
 import com.example.kursinis.utils.LocalDateTypeAdapter;
 import com.example.kursinis.utils.RestOperations;

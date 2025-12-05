@@ -1,8 +1,7 @@
 package com.example.kursinis.activities;
 
 import static com.example.kursinis.utils.Constants.GET_MESSAGES_BY_ORDER;
-import static com.example.kursinis.utils.Constants.GET_ORDERS_BY_USER;
-import static com.example.kursinis.utils.Constants.SEND_MESSAGE_IN_CHAT;
+import static com.example.kursinis.utils.Constants.SEND_MESSAGE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,6 +38,7 @@ import java.util.concurrent.Executors;
 public class ChatSystem extends AppCompatActivity {
 
     private int orderId;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +55,12 @@ public class ChatSystem extends AppCompatActivity {
 
         Intent intent = getIntent();
         orderId = intent.getIntExtra("orderId", 0);
-//        String userInfo = intent.getStringExtra("userJsonObject");
+        userId = intent.getIntExtra("userId", 0);
 
+        loadMessages();
+    }
 
+    private void loadMessages() {
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -70,13 +73,13 @@ public class ChatSystem extends AppCompatActivity {
                         if (!response.equals("Error")) {
                             GsonBuilder gsonBuilder = new GsonBuilder();
                             gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-                            Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
-                            Type ordersListType = new TypeToken<List<Review>>() {
+                            Gson gsonMessages = gsonBuilder.setPrettyPrinting().create();
+                            Type messagesListType = new TypeToken<List<Review>>() {
                             }.getType();
-                            List<Review> ordersListFromJson = gsonRestaurants.fromJson(response, ordersListType);
-                            ListView restaurantListElement = findViewById(R.id.messageList);
-                            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ordersListFromJson);
-                            restaurantListElement.setAdapter(adapter);
+                            List<Review> messagesListFromJson = gsonMessages.fromJson(response, messagesListType);
+                            ListView messagesListElement = findViewById(R.id.messageList);
+                            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, messagesListFromJson);
+                            messagesListElement.setAdapter(adapter);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -88,42 +91,35 @@ public class ChatSystem extends AppCompatActivity {
         });
     }
 
-    public void createMessage(View view) {
-        TextView messageField = findViewById(R.id.bodyField);
-        String messageText = messageField.getText().toString().trim();
-
-        if (messageText.isEmpty()) return;
-
-        // Create JSON
-        Gson gson = new Gson();
-        JsonObject json = new JsonObject();
-        json.addProperty("text", messageText);
-
-        // YOU MUST send commentOwner.id or driver.id
-        // Example: ownerId = 5
-        int ownerId = 2; // take from logged-in user!!!
-        JsonObject commentOwner = new JsonObject();
-        commentOwner.addProperty("id", ownerId);
-
-        json.add("commentOwner", commentOwner);
-
-        String body = gson.toJson(json);
-
+    public void sendMessage(View view) {
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
+        TextView messageBody = findViewById(R.id.bodyField);
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("userId", userId);
+        jsonObject.addProperty("orderId", orderId);
+        jsonObject.addProperty("messageText", messageBody.getText().toString());
+
+        String message = gson.toJson(jsonObject);
+
         executor.execute(() -> {
             try {
-                String response =
-                        RestOperations.sendPost(SEND_MESSAGE_IN_CHAT + orderId, body);
-
+                String response = RestOperations.sendPost(SEND_MESSAGE, message);
+                System.out.println(response);
                 handler.post(() -> {
-                    messageField.setText("");
-//                    reloadMessages();  // refresh messages list
+                    try {
+                        if (!response.equals("Error")) {
+                            loadMessages();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 });
-
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }
