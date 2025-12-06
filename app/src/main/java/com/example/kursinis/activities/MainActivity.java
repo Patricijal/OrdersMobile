@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-// ISSKIRTI USERIU TIPUS - BASICUSER IR DRIVER, RESTORANUI NELEISTI JUNGTIS
+
+    // ISSKIRTI USERIU TIPUS - BASICUSER IR DRIVER, RESTORANUI NELEISTI JUNGTIS
     public void validateUser(View view) {
         TextView loginField = findViewById(R.id.loginField);
         TextView passwordField = findViewById(R.id.passwordField);
@@ -61,10 +62,15 @@ public class MainActivity extends AppCompatActivity {
 
                 handler.post(() -> {
                     if (!response.equals("Error") && !response.isEmpty()) {
+                        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
+                        String userType = obj.get("userType").getAsString();
+                        if (userType.equals("Restaurant") || userType.equals("User")) {
+                            Toast.makeText(MainActivity.this, "Login failed!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         Intent intent = new Intent(MainActivity.this, WoltRestaurants.class);
                         intent.putExtra("userJsonObject", response);
-                        //??Jei noriu kazka is response paimt, man reikia parsint sia dali
-                        //intent.putExtra("userId", )
                         startActivity(intent);
                     }
                 });

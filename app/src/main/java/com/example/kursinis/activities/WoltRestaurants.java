@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.kursinis.R;
+import com.example.kursinis.model.BasicUser;
 import com.example.kursinis.utils.LocalDateTimeDeserializer;
 import com.example.kursinis.utils.LocalDateTimeSerializer;
 import com.example.kursinis.utils.RestOperations;
@@ -26,6 +27,7 @@ import com.example.kursinis.model.Restaurant;
 import com.example.kursinis.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -55,17 +57,17 @@ public class WoltRestaurants extends AppCompatActivity {
         Intent intent = getIntent();
         String userInfo = intent.getStringExtra("userJsonObject");
 
-        // DATU PROBLEMOS
-        GsonBuilder build = new GsonBuilder();
-        build.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
-        Gson gson = build.setPrettyPrinting().create();
-        currentUser = gson.fromJson(userInfo, User.class);
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(userInfo, JsonObject.class);
 
-        if (currentUser instanceof Driver) {
+        String userType = jsonObject.get("userType").getAsString();
 
-        } else if (currentUser instanceof Restaurant) {
-            //net neleisim sito
-        } else {
+
+        if (userType.equals("Driver")) {
+            currentUser = gson.fromJson(userInfo, Driver.class);
+
+        } else if (userType.equals("BasicUser")) {
+            currentUser = gson.fromJson(userInfo, BasicUser.class);
             Executor executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
 
