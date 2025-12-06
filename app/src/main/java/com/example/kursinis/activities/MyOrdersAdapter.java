@@ -42,7 +42,7 @@ public class MyOrdersAdapter extends ArrayAdapter<FoodOrder> {
 //                    ? restaurantName
 //                    : order.getName());
 
-            orderTitle.setText("Order #" + order.getId());
+            orderTitle.setText("Order #" + order.getId() + " " + order.getOrderStatus());
 
             if (order.getPrice() != null) {
                 orderPrice.setText("€" + String.format("%.2f", order.getPrice()));

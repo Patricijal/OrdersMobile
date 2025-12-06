@@ -11,6 +11,7 @@ public class Constants {
     public static final String UPDATE_USER_URL = HOME_URL + "updateUserById/";
 
     public static final String GET_ORDERS_BY_USER = HOME_URL + "getByUserId/";
+    public static final String GET_ORDERS_BY_DRIVER = HOME_URL + "getByDriverId/";
     public static final String GET_MESSAGES_BY_ORDER = HOME_URL + "getMessagesForOrder/";
 //    public static final String SEND_MESSAGE_IN_CHAT = HOME_URL + "insertMessage/";
     public static final String SEND_MESSAGE = HOME_URL + "sendMessage";
@@ -18,5 +19,9 @@ public class Constants {
 //    public static final String GET_CUISINES_BY_RESTAURANT = HOME_URL + "getAllCuisines";
     public static final String GET_RESTAURANT_MENU = HOME_URL + "getMenuRestaurant/";
     public static final String CREATE_ORDER = HOME_URL + "createOrder";
+    public static final String GET_PENDING_ORDERS_URL = HOME_URL + "getPendingOrders";
+    public static final String ASSIGN_DRIVER_TO_ORDER_URL = HOME_URL + "assignDriverToOrder/";
+    public static final String COMPLETE_ORDER_URL = HOME_URL + "completeOrder/";
+    public static final String LEAVE_REVIEW_URL = HOME_URL + "leaveReview";
 
 }

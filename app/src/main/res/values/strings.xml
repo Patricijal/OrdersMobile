@@ -22,4 +22,7 @@
 
     <string name="send_btn">Send</string>
     <string name="body_text">Enter Message...</string>
+
+    <string name="complete_btn">Complete Order</string>
+    <string name="review_btn">Leave Review</string>
 </resources>

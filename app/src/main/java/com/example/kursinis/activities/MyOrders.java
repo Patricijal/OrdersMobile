@@ -1,6 +1,7 @@
 package com.example.kursinis.activities;
 
 import static com.example.kursinis.utils.Constants.GET_ALL_RESTAURANTS_URL;
+import static com.example.kursinis.utils.Constants.GET_ORDERS_BY_DRIVER;
 import static com.example.kursinis.utils.Constants.GET_ORDERS_BY_USER;
 
 import android.content.Intent;
@@ -56,13 +57,21 @@ public class MyOrders extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getIntExtra("id", 0);
+        String userType = intent.getStringExtra("userType");
+
+        String url;
+        if ("Driver".equals(userType)) {
+            url = GET_ORDERS_BY_DRIVER + userId;
+        } else {
+            url = GET_ORDERS_BY_USER + userId;
+        }
 
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
             try {
-                String response = RestOperations.sendGet(GET_ORDERS_BY_USER + userId);
+                String response = RestOperations.sendGet(url);
                 System.out.println(response);
                 handler.post(() -> {
                     try {
@@ -85,6 +94,14 @@ public class MyOrders extends AppCompatActivity {
                                 Intent intentChat = new Intent(MyOrders.this, ChatSystem.class);
                                 intentChat.putExtra("orderId", ordersListFromJson.get(position).getId());
                                 intentChat.putExtra("userId", userId);
+                                intentChat.putExtra("orderStatus", ordersListFromJson.get(position).getOrderStatus().name());
+                                if (userType.equals("Driver")) {
+                                    intentChat.putExtra("userType", "Driver");
+                                } else if (userType.equals("BasicUser")) {
+                                    intentChat.putExtra("userType", "BasicUser");
+                                }
+                                intentChat.putExtra("buyerId", ordersListFromJson.get(position).getBuyerId());
+                                intentChat.putExtra("driverId", ordersListFromJson.get(position).getDriverId());
                                 startActivity(intentChat);
                             });
 

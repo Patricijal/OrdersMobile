@@ -10,6 +10,10 @@ public class FoodOrder {
     private LocalDate dateCreated;
     private LocalDate dateUpdated;
 
+    private int buyerId;
+    private int driverId;
+
+
     public FoodOrder(int id, String name, Double price, OrderStatus orderStatus, LocalDate dateCreated, LocalDate dateUpdated) {
         this.id = id;
         this.name = name;
@@ -68,6 +72,22 @@ public class FoodOrder {
 
     public void setDateUpdated(LocalDate dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public int getBuyerId() {
+        return buyerId;
+    }
+
+    public void setBuyerId(int buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    public int getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(int driverId) {
+        this.driverId = driverId;
     }
 
     @Override
