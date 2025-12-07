@@ -88,8 +88,8 @@
 
             <Button
                 android:id="@+id/btnDecrease"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
                 android:text="-"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -108,8 +108,8 @@
 
             <Button
                 android:id="@+id/btnIncrease"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
                 android:text="+"
                 android:textSize="20sp"
                 android:textStyle="bold" />

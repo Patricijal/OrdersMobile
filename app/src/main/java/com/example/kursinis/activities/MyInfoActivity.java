@@ -2,6 +2,7 @@ package com.example.kursinis.activities;
 
 import static com.example.kursinis.utils.Constants.CREATE_BASIC_USER_URL;
 import static com.example.kursinis.utils.Constants.CREATE_DRIVER_URL;
+import static com.example.kursinis.utils.Constants.DELETE_USER_URL;
 import static com.example.kursinis.utils.Constants.GET_USER_BY_ID_URL;
 import static com.example.kursinis.utils.Constants.UPDATE_USER_URL;
 
@@ -32,6 +33,7 @@ import com.example.kursinis.utils.LocalDateTypeAdapter;
 import com.example.kursinis.utils.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -54,7 +56,7 @@ public class MyInfoActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        userId = intent.getIntExtra("id", -1);
+        userId = intent.getIntExtra("id", 0);
 
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -89,7 +91,7 @@ public class MyInfoActivity extends AppCompatActivity {
 
     private void populateFields(User user, Gson gson, String rawJson) {
         ((TextView) findViewById(R.id.updLoginField)).setText(user.getLogin());
-        ((TextView) findViewById(R.id.updPasswordField)).setText(user.getPassword());
+        ((TextView) findViewById(R.id.updPasswordField)).setText("");
         ((TextView) findViewById(R.id.updNameField)).setText(user.getName());
         ((TextView) findViewById(R.id.updSurnameField)).setText(user.getSurname());
         ((TextView) findViewById(R.id.updPhoneNumField)).setText(user.getPhoneNumber());
@@ -132,7 +134,8 @@ public class MyInfoActivity extends AppCompatActivity {
                 .setPrettyPrinting()
                 .create();
 
-        String userInfo = "{}";
+        // Create the User object
+        User user;
         if (isDriver) {
             LocalDate birthDate = LocalDate.parse(bDate.getText().toString());
             VehicleType vehicleTypeEnum = VehicleType.valueOf(vehicleType.getText().toString().toUpperCase());
@@ -148,9 +151,7 @@ public class MyInfoActivity extends AppCompatActivity {
                     birthDate,
                     vehicleTypeEnum
             );
-//            driver.setId(userId);
-            userInfo = gson.toJson(driver, Driver.class);
-            System.out.println(userInfo);
+            user = driver;
         } else {
             BasicUser basicUser = new BasicUser(
                     userId,
@@ -161,30 +162,73 @@ public class MyInfoActivity extends AppCompatActivity {
                     phoneNum.getText().toString(),
                     address.getText().toString()
             );
-//            basicUser.setId(userId);
-            userInfo = gson.toJson(basicUser, BasicUser.class);
-            System.out.println(userInfo);
+            user = basicUser;
         }
 
+        // Serialize with userType included
+        JsonObject jsonObject = gson.toJsonTree(user).getAsJsonObject();
+        if (user instanceof Driver) jsonObject.addProperty("userType", "Driver");
+        else jsonObject.addProperty("userType", "BasicUser");
+
+        String userInfo = gson.toJson(jsonObject);
+        System.out.println(userInfo);
+
+        // Send request
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
-        String finalUserInfo = userInfo;
         executor.execute(() -> {
             try {
-                String response = RestOperations.sendPut(UPDATE_USER_URL + userId, finalUserInfo);
+                String response = RestOperations.sendPut(UPDATE_USER_URL + userId, userInfo);
                 handler.post(() -> {
                     if (!response.equals("Error") && !response.isEmpty()) {
                         Intent intent = new Intent(MyInfoActivity.this, MainActivity.class);
-//                        intent.putExtra("userJsonObject", response);
                         startActivity(intent);
+                    } else {
+                        Toast.makeText(MyInfoActivity.this, "Update failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 handler.post(() -> Toast.makeText(MyInfoActivity.this, "Update failed!", Toast.LENGTH_SHORT).show());
             }
-
         });
+    }
+
+    public void deleteUser(View view) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    // User confirmed, perform deletion
+                    Executor executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    executor.execute(() -> {
+                        try {
+                            String response = RestOperations.sendDelete(DELETE_USER_URL + userId);
+                            handler.post(() -> {
+                                if (response.equals("Successful delete")) {
+                                    Toast.makeText(MyInfoActivity.this, "User deleted successfully!", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(MyInfoActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(MyInfoActivity.this, "Failed to delete user!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            handler.post(() -> Toast.makeText(MyInfoActivity.this, "Error while deleting user!", Toast.LENGTH_SHORT).show());
+                        }
+                    });
+
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    // User canceled, do nothing
+                    dialog.dismiss();
+                })
+                .setCancelable(true)
+                .show();
     }
 }

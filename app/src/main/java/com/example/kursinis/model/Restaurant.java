@@ -6,29 +6,35 @@ import java.util.List;
 public class Restaurant extends BasicUser {
     private String workHours;
     private Double rating;
+    private Integer discount = 0;
 
     public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, String workHours, Double rating) {
         super(login, password, name, surname, phoneNumber, address);
         this.workHours = workHours;
         this.rating = rating;
+        this.discount = 0;
     }
 
     public Restaurant(int id, String login, String password, String name, String surname, String phoneNumber, LocalDateTime dateCreated, LocalDateTime dateUpdated, boolean isAdmin, String address, String workHours, Double rating) {
         super(id, login, password, name, surname, phoneNumber, dateCreated, dateUpdated, isAdmin, address);
         this.workHours = workHours;
         this.rating = rating;
+        this.discount = 0;
     }
 
     public Restaurant(String workHours, Double rating) {
         this.workHours = workHours;
         this.rating = rating;
+        this.discount = 0;
     }
 
     public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address) {
         super(login, password, name, surname, phoneNumber, address);
+        this.discount = 0;
     }
 
     public Restaurant() {
+        this.discount = 0;
     }
 
     public String getWorkHours() {
@@ -45,6 +51,14 @@ public class Restaurant extends BasicUser {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public Integer getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Integer discount) {
+        this.discount = discount;
     }
 
     @Override

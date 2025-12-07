@@ -141,6 +141,9 @@ public class WoltRestaurants extends AppCompatActivity {
 //                                    intentMenu.putExtra("restaurantId", restaurantListFromJson.get(position).getId());
                                     intentMenu.putExtra("restaurantId", selectedRestaurant.getId());
                                     intentMenu.putExtra("userId", currentUser.getId());
+                                    intentMenu.putExtra("name", selectedRestaurant.getName());
+                                    intentMenu.putExtra("workHours", selectedRestaurant.getWorkHours());
+                                    intentMenu.putExtra("discount", selectedRestaurant.getDiscount());
                                     startActivity(intentMenu);
                                 });
                             }

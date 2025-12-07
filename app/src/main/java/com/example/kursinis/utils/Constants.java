@@ -23,5 +23,7 @@ public class Constants {
     public static final String ASSIGN_DRIVER_TO_ORDER_URL = HOME_URL + "assignDriverToOrder/";
     public static final String COMPLETE_ORDER_URL = HOME_URL + "completeOrder/";
     public static final String LEAVE_REVIEW_URL = HOME_URL + "leaveReview";
+    public static final String UPDATE_CLIENT_BONUS_URL = HOME_URL + "updateUser";
+    public static final String DELETE_USER_URL = HOME_URL + "deleteUser/";
 
 }
