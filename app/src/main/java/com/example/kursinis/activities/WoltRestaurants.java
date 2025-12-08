@@ -81,6 +81,7 @@ public class WoltRestaurants extends AppCompatActivity {
             executor.execute(() -> {
                 try {
                     String response = RestOperations.sendGet(GET_PENDING_ORDERS_URL);
+                    System.out.println(response);
                     handler.post(() -> {
                         if (!response.equals("Error")) {
                             GsonBuilder gsonBuilder = new GsonBuilder();
@@ -116,21 +117,12 @@ public class WoltRestaurants extends AppCompatActivity {
                     handler.post(() -> {
                         try {
                             if (!response.equals("Error")) {
-                                //Cia yra dalis, kaip is json, kuriame yra [{},{}, {},...] paversti i List is Restoranu
-
                                 GsonBuilder gsonBuilder = new GsonBuilder();
                                 gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
                                 Gson gsonRestaurants = gsonBuilder.setPrettyPrinting().create();
                                 Type restaurantListType = new TypeToken<List<Restaurant>>() {
                                 }.getType();
                                 List<Restaurant> restaurantListFromJson = gsonRestaurants.fromJson(response, restaurantListType);
-                                //Json parse end
-
-                                //Reikia tuos duomenis, kuriuos ka tik isparsinau is json, atvaizduoti grafiniam elemente
-//                                ListView restaurantListElement = findViewById(R.id.restaurantList);
-//                                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, restaurantListFromJson);
-//                                restaurantListElement.setAdapter(adapter);
-
                                 ListView restaurantListElement = findViewById(R.id.restaurantList);
                                 RestaurantAdapter adapter = new RestaurantAdapter(this, restaurantListFromJson);
                                 restaurantListElement.setAdapter(adapter);
@@ -138,7 +130,6 @@ public class WoltRestaurants extends AppCompatActivity {
                                 restaurantListElement.setOnItemClickListener((parent, view, position, id) -> {
                                     Restaurant selectedRestaurant = restaurantListFromJson.get(position);
                                     Intent intentMenu = new Intent(WoltRestaurants.this, MenuActivity.class);
-//                                    intentMenu.putExtra("restaurantId", restaurantListFromJson.get(position).getId());
                                     intentMenu.putExtra("restaurantId", selectedRestaurant.getId());
                                     intentMenu.putExtra("userId", currentUser.getId());
                                     intentMenu.putExtra("name", selectedRestaurant.getName());

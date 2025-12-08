@@ -324,7 +324,6 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnQua
 
         executor.execute(() -> {
             try {
-                // Example endpoint for getting user info
                 String response = RestOperations.sendGet(GET_USER_BY_ID_URL + userId);
                 if (!response.equals("Error")) {
                     Gson gson = new Gson();
@@ -334,7 +333,6 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnQua
                     handler.post(() -> {
                         ((TextView) findViewById(R.id.bonusPointsLabel)).setText("Bonus points: " + bonusPoints);
                         Toast.makeText(this, "You have " + bonusPoints + " bonus points!", Toast.LENGTH_SHORT).show();
-                        // Update order summary to reflect bonus points
                         updateOrderSummary();
                     });
                 }

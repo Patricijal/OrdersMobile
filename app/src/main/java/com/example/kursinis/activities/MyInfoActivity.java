@@ -73,7 +73,6 @@ public class MyInfoActivity extends AppCompatActivity {
                             .setPrettyPrinting()
                             .create();
 
-                    // Parse as User first
                     User user = gson.fromJson(response, User.class);
 
                     handler.post(new Runnable() {
@@ -99,7 +98,7 @@ public class MyInfoActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.updAddressField)).setText(basicUser.getAddress());
 
         // Check if  Driver
-        if (rawJson.contains("vehicleType")) { // crude check based on JSON
+        if (rawJson.contains("vehicleType")) {
             Driver driver = gson.fromJson(rawJson, Driver.class);
             ((TextView) findViewById(R.id.updLicenseField)).setText(driver.getLicense());
             ((TextView) findViewById(R.id.updBirthDateField)).setText(driver.getBDate().toString());

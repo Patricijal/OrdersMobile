@@ -36,14 +36,7 @@ public class MyOrdersAdapter extends ArrayAdapter<FoodOrder> {
         TextView orderPrice = view.findViewById(R.id.orderPrice);
 
         if (order != null) {
-//            String restaurantName = order.getRestaurantName();
-//            // Fallback to order name if restaurant name is not present
-//            restaurantLabel.setText(restaurantName != null && !restaurantName.isEmpty()
-//                    ? restaurantName
-//                    : order.getName());
-
             orderTitle.setText("Order #" + order.getId() + " " + order.getOrderStatus());
-
             if (order.getPrice() != null) {
                 orderPrice.setText("€" + String.format("%.2f", order.getPrice()));
             } else {

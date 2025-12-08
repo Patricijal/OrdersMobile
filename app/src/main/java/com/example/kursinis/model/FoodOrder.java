@@ -13,7 +13,6 @@ public class FoodOrder {
     private int buyerId;
     private int driverId;
 
-
     public FoodOrder(int id, String name, Double price, OrderStatus orderStatus, LocalDate dateCreated, LocalDate dateUpdated) {
         this.id = id;
         this.name = name;

@@ -35,13 +35,13 @@ public class DriverOrderAdapter extends ArrayAdapter<FoodOrder> {
 
         TextView nameText = convertView.findViewById(R.id.orderName);
         TextView priceText = convertView.findViewById(R.id.orderPrice);
-        TextView restaurantText = convertView.findViewById(R.id.orderRestaurant);
-        TextView buyerText = convertView.findViewById(R.id.orderBuyer);
+        TextView statusText = convertView.findViewById(R.id.orderStatus);
+        TextView dateText = convertView.findViewById(R.id.orderDate);
 
         nameText.setText(order.getName());
         priceText.setText(String.format("%.2f EUR", order.getPrice()));
-        restaurantText.setText("Restaurant: N/A"); // placeholder
-        buyerText.setText("Buyer: N/A"); // placeholder
+        statusText.setText("Status: " + order.getOrderStatus());
+        dateText.setText("Date: " + order.getDateCreated());
 
         return convertView;
     }

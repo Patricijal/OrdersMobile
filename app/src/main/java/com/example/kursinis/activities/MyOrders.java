@@ -88,7 +88,6 @@ public class MyOrders extends AppCompatActivity {
                             MyOrdersAdapter adapter = new MyOrdersAdapter(this, ordersListFromJson);
                             ordersListElement.setAdapter(adapter);
 
-
                             ordersListElement.setOnItemClickListener((parent, view, position, id) -> {
                                 System.out.println(ordersListFromJson.get(position));
                                 Intent intentChat = new Intent(MyOrders.this, ChatSystem.class);

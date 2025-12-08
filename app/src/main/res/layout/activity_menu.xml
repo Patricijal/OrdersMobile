@@ -13,10 +13,9 @@
         android:layout_height="419dp"
         app:layout_constraintBottom_toTopOf="@+id/orderSummaryCard"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.763" />
+        app:layout_constraintVertical_bias="0.912" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/orderSummaryCard"
@@ -130,10 +129,10 @@
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/menuItems"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
+        app:layout_constraintHorizontal_bias="0.062"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.461" />
+        app:layout_constraintVertical_bias="0.555" />
 
     <TextView
         android:id="@+id/bonusPointsLabel"
@@ -144,9 +143,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/menuItems"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.057"
+        app:layout_constraintHorizontal_bias="0.063"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.892" />
+        app:layout_constraintVertical_bias="0.873" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

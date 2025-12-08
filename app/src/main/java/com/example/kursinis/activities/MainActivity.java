@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // ISSKIRTI USERIU TIPUS - BASICUSER IR DRIVER, RESTORANUI NELEISTI JUNGTIS
     public void validateUser(View view) {
         TextView loginField = findViewById(R.id.loginField);
         TextView passwordField = findViewById(R.id.passwordField);

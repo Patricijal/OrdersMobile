@@ -27,6 +27,7 @@ import com.example.kursinis.utils.RestOperations;
 import com.example.kursinis.model.BasicUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -82,7 +83,9 @@ public class RegistrationActivity extends AppCompatActivity {
                     birthDate,
                     vehicleTypeEnum
             );
-            userInfo = gson.toJson(driver, Driver.class);
+            JsonObject driverJson = gson.toJsonTree(driver).getAsJsonObject();
+            driverJson.addProperty("userType", "Driver");
+            userInfo = gson.toJson(driverJson);
             System.out.println(userInfo);
         } else {
             BasicUser basicUser = new BasicUser(
@@ -93,7 +96,9 @@ public class RegistrationActivity extends AppCompatActivity {
                     phoneNum.getText().toString(),
                     address.getText().toString()
             );
-            userInfo = gson.toJson(basicUser, BasicUser.class);
+            JsonObject basicJson = gson.toJsonTree(basicUser).getAsJsonObject();
+            basicJson.addProperty("userType", "BasicUser");
+            userInfo = gson.toJson(basicJson);
             System.out.println(userInfo);
         }
 

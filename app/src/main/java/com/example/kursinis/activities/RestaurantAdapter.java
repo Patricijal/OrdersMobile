@@ -35,12 +35,7 @@ public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
             TextView nameTextView = convertView.findViewById(R.id.restaurantName);
             TextView addressTextView = convertView.findViewById(R.id.restaurantAddress);
             TextView phoneTextView = convertView.findViewById(R.id.restaurantPhone);
-
-            // Display restaurant name (name + surname or just name)
             String restaurantName = restaurant.getName();
-//            if (restaurant.getSurname() != null && !restaurant.getSurname().isEmpty()) {
-//                restaurantName += " " + restaurant.getSurname();
-//            }
             nameTextView.setText(restaurantName);
 
             // Display address
